@@ -88,12 +88,14 @@ function AdminHome() {
       <input 
         type="text" 
         placeholder="Name" 
+        id = "newname"
         value={newStudent.name} 
         onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value })}
       />
       <input 
         type="email" 
         placeholder="Email" 
+        id = "newemail"
         value={newStudent.email} 
         onChange={(e) => setNewStudent({ ...newStudent, email: e.target.value })}
       />
@@ -108,18 +110,21 @@ function AdminHome() {
           <input 
             type="text" 
             placeholder="Name" 
+            id = "editname"
             value={editingStudent.name} 
             onChange={(e) => setEditingStudent({ ...editingStudent, name: e.target.value })}
           />
           <input 
             type="email" 
             placeholder="Email" 
+            id = "editmail"
             value={editingStudent.email} 
             onChange={(e) => setEditingStudent({ ...editingStudent, email: e.target.value })}
           />
           <input 
             type="status" 
             placeholder="Status" 
+            id = "editstatus"
             value={editingStudent.status} 
             onChange={(e) => setEditingStudent({ ...editingStudent, status: e.target.value })}
           />
