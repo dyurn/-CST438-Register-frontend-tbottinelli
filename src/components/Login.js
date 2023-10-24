@@ -23,7 +23,7 @@ function Login() {
                 const jwtToken = res.headers.get('Authorization');
                 if (jwtToken !== null) {
                     sessionStorage.setItem("jwt", jwtToken);
-                    history.push("/"); // Redirige vers la page d'accueil après une connexion réussie
+                    history.push("/");
                 }
             } else {
                 // Gère les erreurs de réponse, comme l'authentification incorrecte
@@ -42,7 +42,7 @@ function Login() {
             <table>
                 <tbody>
                     <tr>
-                        <td><label htmlFor="username">Username:</label></td>
+                        <td><label htmlFor="email">Username:</label></td>
                         <td><input type="text" name="username" value={user.username} onChange={onChange} /></td>
                     </tr>
                     <tr>
