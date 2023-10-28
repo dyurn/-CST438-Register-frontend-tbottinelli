@@ -5,18 +5,30 @@ function AdminHome() {
   const [newStudent, setNewStudent] = useState({ name: '', email: '' });
   const [editingStudent, setEditingStudent] = useState(null);
 
+  // Récupérer le token JWT depuis le sessionStorage
+  const token = sessionStorage.getItem("jwt");
+
   useEffect(() => {
-    fetch('http://localhost:8080/students')
-      .then(response => response.json())
-      .then(data => setStudents(data))
-      .catch(err => console.error(err));
+    fetchStudents();
   }, []);
+
+  const fetchStudents = () => {
+    fetch('http://localhost:8080/students', {
+      headers: {
+        'Authorization': token,  // Ajout de l'en-tête d'autorisation
+      },
+    })
+    .then(response => response.json())
+    .then(data => setStudents(data))
+    .catch(err => console.error(err));
+  };
 
   const addStudent = () => {
     fetch('http://localhost:8080/students', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': token,  // Ajout de l'en-tête d'autorisation
       },
       body: JSON.stringify(newStudent),
     })
@@ -29,15 +41,13 @@ function AdminHome() {
   };
 
   const updateStudent = (studentId) => {
-    if (students.some(student => student.email === editingStudent.email && student.id !== studentId)) {
-      alert('Email must be unique.');
-      return;
-    }
-  
+    // La vérification de l'unicité de l'e-mail pourrait être effectuée ici ou côté serveur.
+
     fetch(`http://localhost:8080/students/${studentId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': token,  // Ajout de l'en-tête d'autorisation
       },
       body: JSON.stringify(editingStudent),
     })
@@ -51,10 +61,12 @@ function AdminHome() {
   const deleteStudent = (studentId) => {
     fetch(`http://localhost:8080/students/${studentId}`, {
       method: 'DELETE',
+      headers: {
+        'Authorization': token,  // Ajout de l'en-tête d'autorisation
+      },
     })
     .then(() => {
       setStudents(students.filter(student => student.student_id !== studentId));
-      setEditingStudent(null);
     })
     .catch(err => console.error(err));
   };
@@ -63,27 +75,29 @@ function AdminHome() {
     <div>
       <h3>Student List</h3>
       <table border="1" style={{ margin: 'auto' }}>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {students.map((student) => (
-          <tr key={student.student_id}>
-            <td>{student.name}</td>
-            <td>{student.email}</td>
-            <td>{student.status}</td>
-            <td>
-              <button onClick={() => setEditingStudent({ ...student })}>Edit</button>
-            </td>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Actions</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {students.map((student) => (
+            <tr key={student.student_id}>
+              <td>{student.name}</td>
+              <td>{student.email}</td>
+              <td>{student.status}</td>
+              <td>
+                <button onClick={() => setEditingStudent({ ...student })}>Edit</button>
+                <button onClick={() => deleteStudent(student.student_id)}>Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
       <h3>Add New Student</h3>
       <input 
         type="text" 
@@ -97,14 +111,11 @@ function AdminHome() {
         value={newStudent.email} 
         onChange={(e) => setNewStudent({ ...newStudent, email: e.target.value })}
       />
-      <div>
-        <button onClick={addStudent}>Add</button>
-      </div>
+      <button onClick={addStudent}>Add</button>
 
       {editingStudent && (
         <div>
           <h3>Edit Student</h3>
-          <h5>ID : {editingStudent.student_id}</h5>
           <input 
             type="text" 
             placeholder="Name" 
@@ -118,15 +129,12 @@ function AdminHome() {
             onChange={(e) => setEditingStudent({ ...editingStudent, email: e.target.value })}
           />
           <input 
-            type="status" 
+            type="text" 
             placeholder="Status" 
             value={editingStudent.status} 
             onChange={(e) => setEditingStudent({ ...editingStudent, status: e.target.value })}
           />
-          <div>
-            <button onClick={() => updateStudent(editingStudent.student_id)}>Update</button>
-            <button onClick={() => deleteStudent(editingStudent.student_id)}>Delete</button>
-          </div>
+          <button onClick={() => updateStudent(editingStudent.student_id)}>Update</button>
         </div>
       )}
     </div>
